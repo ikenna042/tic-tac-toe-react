@@ -13,7 +13,8 @@ serviceWorker.register();
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className={"square" + (props.isWinning ? "square-winning" : null)}
+    onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -23,6 +24,7 @@ function Square(props) {
     renderSquare(i) {
       return (
         <Square
+        isWinning = {this.props.winningSquares.includes(i)}
         key={'square ' + i}
           value={this.props.squares[i]}
           onClick={() => this.props.onClick(i)}
@@ -128,7 +130,9 @@ function Square(props) {
 
       let status;
       if (winner) {
-        status = 'Winner: ' + winner;
+        status = 'Winner: ' + winner.player + ' ' + winner.line;
+      }else if(!current.squares.includes(null)) {
+        status = 'draw';
       } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : '0');
       }
@@ -137,6 +141,7 @@ function Square(props) {
         <div className="game">
           <div className="game-board">
             <Board
+            winningSquares = {winner ? winner.line : []}
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
             />
@@ -168,7 +173,8 @@ function Square(props) {
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
+        return {player: squares[a],
+                line: [a, b, c]};
       }
     }
     return null;
